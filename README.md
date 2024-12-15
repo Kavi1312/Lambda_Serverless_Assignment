@@ -33,7 +33,9 @@ The goal of this assignment is to create a process where, before an EC2 instance
 2. Click **"Create Bucket"**.
 3. Enter a unique bucket name, such as `ec2-instance-state-backup`.
 4. Leave default settings (Block Public Access enabled) and click **"Create Bucket"**.
-5. Set the bucket policy to allow access from the Lambda function:
+5. - ![image](https://github.com/user-attachments/assets/70259562-766b-4b71-8a44-db4fdd748e28)
+
+6. Set the bucket policy to allow access from the Lambda function:
    ```json
    {
        "Version": "2012-10-17",
@@ -56,6 +58,8 @@ The goal of this assignment is to create a process where, before an EC2 instance
 3. Attach the following policies to the role:
    - **AmazonEC2ReadOnlyAccess** (to read instance details).
    - **AmazonS3FullAccess** (or a custom policy with `s3:PutObject` permissions for the S3 bucket).
+   - ![image](https://github.com/user-attachments/assets/705bc7c4-0bcb-45e8-97a7-70f3a9470fb8)
+
 
    Custom policy for S3:
    ```json
@@ -71,8 +75,7 @@ The goal of this assignment is to create a process where, before an EC2 instance
    }
 -------------------------------------------   ```
 4. Assign the role to your Lambda function.
-- ![image](https://github.com/user-attachments/assets/08918c3b-ef10-401d-9f9d-50b881300dbe)
-- ![image](https://github.com/user-attachments/assets/fc6c0f39-87df-4978-8716-afc720791869)
+- 
 
 
 ### Step 3: Create a CloudWatch Rule
@@ -84,8 +87,9 @@ The goal of this assignment is to create a process where, before an EC2 instance
    - **Specific State**: `shutting-down`
 4. Add the Lambda function as the target.
 5. Name the rule `ec2-shutdown-trigger` and enable it.
-- ![image](https://github.com/user-attachments/assets/425783a3-fac4-43d9-94e2-aca7fb10cfa6)
-- ![image](https://github.com/user-attachments/assets/5c50d688-f138-4289-9c97-759303d23372)
+6. - ![image](https://github.com/user-attachments/assets/2ab9b12c-ac57-4cc4-84ba-667ee608ab77)
+
+-
 
 -----------------------------------------
 ### Step 4: Write the Lambda Function
@@ -166,8 +170,10 @@ def lambda_handler(event, context):
    - Terminate or shut down an EC2 instance.
 2. **Validate S3**:
    - Go to the S3 bucket (`ec2-instance-state-backup`) and verify that a file named `<instance-id>-shutting-down.json` or `<instance-id>-terminated.json` is created.
-   - ![image](https://github.com/user-attachments/assets/8b334a24-0cb8-4f12-90ee-5e4802cf9646)
-   - ![image](https://github.com/user-attachments/assets/4f9152fc-b4be-47a0-9e19-6afdb44fd0b4)
+   - ![image](https://github.com/user-attachments/assets/29c45103-55fc-4bb9-b33d-b0538bd9c101)
+    - ![image](https://github.com/user-attachments/assets/bc967801-b2a0-4cec-ab0a-aa2ccfdfc436)
+
+
 ------------
 ### Step 6: Troubleshooting
 1. **Error: Object of type datetime is not JSON serializable**:
@@ -195,14 +201,13 @@ def lambda_handler(event, context):
          }
      }
      ```
-- ![image](https://github.com/user-attachments/assets/cabe16ae-2a80-4f83-94e5-7afe791bbae0)
-
-
-
-
+     
 ## Conclusion
 This solution ensures that EC2 instance details are automatically saved to an S3 bucket before termination or shutdown, providing a reliable backup mechanism. By leveraging AWS services such as CloudWatch, Lambda, and S3, the process is fully automated and scalable.
 ====================================================================================================================================================================================================================================================================
+
+
+
 
 # **Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3**
 
@@ -243,7 +248,7 @@ Automatically tag any newly launched EC2 instance with the current date and a cu
 
 ----------------------------------------------
 
-# Assignment: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
+Documentation :-   Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
 
 ## Objective
 To automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
@@ -459,13 +464,226 @@ response = ec2_client.create_tags(Resources=[instance_id], Tags=tags)
 ```
 
 ### AWS CLI to Tag an Instance Manually (Optional):
-```bash
 aws ec2 create-tags --resources i-0bcf4a6cdc4d9fe57 --tags Key=LaunchDate,Value=2024-12-14 Key=Owner,Value=AutoTagging
 =========================================================================================================================================================================================================================================================
 
 
 
+## **Assignment 14: Monitor EC2 Instance State Changes Using AWS Lambda, Boto3, and SNS**
+
+### **Objective**
+**Automatically monitor changes in EC2 instance states and send notifications via SNS whenever an instance is started or stopped.**
+
+## **Task**
+Set up a Lambda function that listens to EC2 state change events and sends SNS notifications detailing the state changes.
+
+-## **Instructions**
+
+#### **1. SNS Setup:**
+- Navigate to the SNS dashboard and create a new topic.
+- Subscribe to this topic with your email.
+
+#### **2. Lambda IAM Role:**
+- Create a role with permissions to read EC2 instance states and send SNS notifications.
+
+#### **3. Lambda Function:**
+- Create a function and assign the above IAM role.
+- Use Boto3 to:
+  1. Extract details from the event regarding the EC2 state change.
+  2. Send an SNS notification with details about which EC2 instance changed state and the new state (e.g., started, stopped).
+
+#### **4. EC2 Event Bridge (formerly CloudWatch Events):**
+- Set up an Event Bridge rule to trigger your Lambda function whenever an EC2 instance state changes.
+
+#### **5. Testing:**
+- Start or stop one of your EC2 instances.
+- Confirm you receive an SNS notification about the state change.
+
+ Documentation:- Monitoring EC2 Instance State Changes Using AWS Lambda, Boto3, and SNS
+
+## **Step 1: SNS Setup**
+
+### **1.1 Create an SNS Topic**
+1. Log in to the AWS Management Console and navigate to **SNS (Simple Notification Service)**.
+2. Click **Topics** in the left-hand menu and then click **Create topic**.
+3. Select **Standard** as the type.
+4. Enter a name for your topic, e.g., `EC2StateChangeTopic`.
+5. Click **Create topic**.
+- ![image](https://github.com/user-attachments/assets/aecc0d99-3f6b-4c8d-9404-43dc9c5567b2)
 
 
+### **1.2 Subscribe to the Topic**
+1. Open your newly created topic.
+2. Click **Create subscription**.
+3. Choose `Email` as the protocol.
+4. Enter your email address in the **Endpoint** field.
+5. Click **Create subscription**.
+6. Check your email inbox for a confirmation email from AWS and confirm your subscription.
+- ![image](https://github.com/user-attachments/assets/89ee7182-6205-4c31-9822-d144b593a827)
+
+---
+
+## **Step 2: Create an IAM Role for Lambda**
+
+### **2.1 Create a Role**
+1. Navigate to the **IAM (Identity and Access Management)** dashboard.
+2. Click **Roles** in the left-hand menu and then click **Create role**.
+3. Select **AWS service** as the trusted entity type.
+4. Choose **Lambda** as the service.
+5. Click **Next** to add permissions.
+
+### **2.2 Attach Policies**
+1. Search for and attach the following policies:
+   - **AmazonEC2ReadOnlyAccess** (to allow Lambda to read EC2 instance states).
+   - **AmazonSNSFullAccess** (to allow Lambda to publish messages to SNS).
+
+2. Alternatively, create a custom policy using the following JSON and attach it:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstances",
+                "ec2:DescribeInstanceStatus"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "sns:Publish",
+            "Resource": "<YOUR_SNS_TOPIC_ARN>"
+        }
+    ]
+}
+```
+
+3. Click **Next**, give your role a name, e.g., `LambdaEC2StateChangeRole`.
+4. Click **Create role**.
+5. -![image](https://github.com/user-attachments/assets/f9d5d091-75ae-412b-91be-f8254d7bb0df)
+
+
+---
+
+## **Step 3: Create the Lambda Function**
+
+### **3.1 Create a Lambda Function**
+1. Go to the **Lambda dashboard** in AWS.
+2. Click **Create function**.
+3. Choose **Author from scratch**.
+4. Enter a name for the function, e.g., `EC2StateChangeNotifier`.
+5. Select **Python 3.x** as the runtime.
+6. Under **Execution role**, choose **Use an existing role** and select the role you created in Step 2.
+7. Click **Create function**.
+   - ![image](https://github.com/user-attachments/assets/8f4b9c2b-afbc-44fd-9a97-a0fb6a3eacab)
+
+
+### **3.2 Add the Code**
+1. In the Lambda code editor, replace the default code with the following:
+
+```python
+import json
+import boto3
+
+def lambda_handler(event, context):
+    sns_client = boto3.client('sns')
+    sns_topic_arn = '<YOUR_SNS_TOPIC_ARN>'
+
+    # Extract details from the event
+    detail = event['detail']
+    instance_id = detail['instance-id']
+    state = detail['state']
+
+    # Prepare the message
+    message = f"EC2 Instance {instance_id} is now {state}."
+    print(message)
+
+    # Publish the message to SNS
+    response = sns_client.publish(
+        TopicArn=sns_topic_arn,
+        Message=message,
+        Subject='EC2 State Change Notification'
+    )
+    print("SNS Response:", response)
+```
+
+2. Replace `<YOUR_SNS_TOPIC_ARN>` with the ARN of your SNS topic (found in the SNS dashboard).
+3. Click **Deploy** to save your changes.
+
+---
+
+## **Step 4: Configure EventBridge to Trigger Lambda**
+
+### **4.1 Create an EventBridge Rule**
+1. Navigate to **EventBridge** in the AWS Management Console.
+2. Click **Rules** in the left-hand menu and then click **Create rule**.
+3. Enter a name for the rule, e.g., `EC2StateChangeRule`.
+4. For **Event source**, choose **AWS services**.
+5. Under **Service Name**, select **EC2**.
+6. For **Event Type**, select **EC2 Instance State-change Notification**.
+   - ![image](https://github.com/user-attachments/assets/aafc6fb3-3200-402c-aa1a-8516a19ee445)
+   - ![image](https://github.com/user-attachments/assets/b66b80b2-060a-430d-b380-bd991d79017a)
+
+
+
+### **4.2 Add Target**
+1. Under the **Target** section, choose **Lambda function**.
+2. Select your Lambda function (`EC2StateChangeNotifier`).
+3. Click **Create**.
+4. -![image](https://github.com/user-attachments/assets/bb4f51ba-1dfe-4209-aabe-63a4920f455c)
+
+
+---
+
+## **Step 5: Testing**
+
+### **5.1 Start or Stop an EC2 Instance**
+1. Navigate to the **EC2 dashboard**.
+2. Select an instance, then choose **Instance State** > **Start** or **Stop**.
+3. Wait for the instance state to change.
+
+### **5.2 Verify SNS Notification**
+1. Check your email inbox.
+2. You should receive a notification about the instance state change, e.g., `EC2 Instance i-0123456789abcdef is now stopped`.
+- ![image](https://github.com/user-attachments/assets/5ab73c22-5395-412d-b573-eaf7ee330c0d)
+- ![image](https://github.com/user-attachments/assets/155b631b-98e8-43c7-99c0-0b9069d65eb6)
+- ![image](https://github.com/user-attachments/assets/479567be-af66-4010-bba1-aa7beb60d70e)
+
+
+
+---
+
+## **Step 6: Troubleshooting**
+
+### **Common Issues and Fixes**
+
+#### **1. Lambda Function Errors**
+- **Issue**: `sns:Publish` permission error.
+  - **Fix**: Ensure that the IAM role attached to the Lambda function has the `sns:Publish` permission and includes the correct SNS Topic ARN.
+
+- **Issue**: Incorrect SNS Topic ARN.
+  - **Fix**: Double-check the ARN in your Lambda code and ensure it matches the ARN of your created SNS topic.
+
+#### **2. EventBridge Rule Not Triggering Lambda**
+- **Issue**: EventBridge rule not invoking the Lambda function.
+  - **Fix**: Verify that the EventBridge rule is enabled and correctly linked to your Lambda function.
+
+#### **3. SNS Notifications Not Received**
+- **Issue**: Email notifications not received.
+  - **Fix**: Ensure that the email subscription is confirmed. Check your spam or junk folder for the confirmation email.
+
+#### **4. Testing Issues**
+- **Issue**: State change events not detected.
+  - **Fix**: Ensure you are testing with valid state change actions like starting or stopping the instance.
+  - **Fix**: Check if the instance state change events are properly logged in EventBridge.
+
+---
+
+## **Step 7: Cleanup (Optional)**
+
+1. Delete the Lambda function, EventBridge rule, and SNS topic if you no longer need them.
+2. Remove the IAM role if it's no longer required.
 
 
