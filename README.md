@@ -465,7 +465,14 @@ response = ec2_client.create_tags(Resources=[instance_id], Tags=tags)
 
 ### AWS CLI to Tag an Instance Manually (Optional):
 aws ec2 create-tags --resources i-0bcf4a6cdc4d9fe57 --tags Key=LaunchDate,Value=2024-12-14 Key=Owner,Value=AutoTagging
+
+
+
+
+
 =========================================================================================================================================================================================================================================================
+
+
 
 
 
