@@ -1,71 +1,17 @@
 
+# **ASSIGNMENT 18: AUTOSAVE EC2 INSTANCE STATE BEFORE SHUTDOWN**
 
+### **Objective**
+Before an EC2 instance is shut down, automatically save its current state to an S3 bucket.
 
+### **Instructions**
+1. **Create a Lambda Function**.
+2. Using **Boto3**, the function should:
+   - Detect when an EC2 instance is about to be terminated.
+   - Save the current state or necessary files from the EC2 instance to an S3 bucket.
+3. Use **CloudWatch Events** to trigger this Lambda function whenever an EC2 termination command is detected.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Assignment 18: Autosave EC2 Instance State Before Shutdown
-Objective: Before an EC2 instance is shut down, automatically save its current state to an S3 bucket.
-Instructions:
-1. Create a Lambda function.
-2. Using Boto3, the function should:
-   1. Detect when an EC2 instance is about to be terminated.
-   2. Save the current state or necessary files from the EC2 instance to an S3 bucket.
-3. Use CloudWatch Events to trigger this Lambda function whenever an EC2 termination command is detected.
+---
 
 # Documentation: Autosave EC2 Instance State Before Shutdown
 ---
@@ -258,31 +204,42 @@ def lambda_handler(event, context):
 This solution ensures that EC2 instance details are automatically saved to an S3 bucket before termination or shutdown, providing a reliable backup mechanism. By leveraging AWS services such as CloudWatch, Lambda, and S3, the process is fully automated and scalable.
 ====================================================================================================================================================================================================================================================================
 
+# **Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3**
 
-Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
-Objective: Learn to automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
-Task: Automatically tag any newly launched EC2 instance with the current date and a custom tag.
-Instructions:
-1. EC2 Setup:
-   - Ensure you have the capability to launch EC2 instances.
-2. Lambda IAM Role:
-   - In the IAM dashboard, create a new role for Lambda.
-   - Attach the `AmazonEC2FullAccess` policy to this role.
-3. Lambda Function:
-   - Navigate to the Lambda dashboard and create a new function.
-   - Choose Python 3.x as the runtime.
-   - Assign the IAM role created in the previous step.
-   - Write the Boto3 Python script to:
-     1. Initialize a boto3 EC2 client.
-     2. Retrieve the instance ID from the event.
-     3. Tag the new instance with the current date and another tag of your choice.
-    4. Print a confirmation message for logging purposes.
-4. CloudWatch Events:
-   - Set up a CloudWatch Event Rule to trigger the EC2 instance launch event.
-   - Attach the Lambda function as the target.
-5. Testing:
-   - Launch a new EC2 instance.
-   - After a short delay, confirm that the instance is automatically tagged as specified.
+### **Objective**
+Learn to automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
+
+### **Task**
+Automatically tag any newly launched EC2 instance with the current date and a custom tag.
+
+### **Instructions**
+
+#### **1. EC2 Setup**
+- Ensure you have the capability to launch EC2 instances.
+
+#### **2. Lambda IAM Role**
+- In the IAM dashboard, create a new role for Lambda.
+- Attach the `AmazonEC2FullAccess` policy to this role.
+
+#### **3. Lambda Function**
+- Navigate to the Lambda dashboard and create a new function.
+- Choose Python 3.x as the runtime.
+- Assign the IAM role created in the previous step.
+- Write the Boto3 Python script to:
+  1. Initialize a boto3 EC2 client.
+  2. Retrieve the instance ID from the event.
+  3. Tag the new instance with the current date and another tag of your choice.
+  4. Print a confirmation message for logging purposes.
+
+#### **4. CloudWatch Events**
+- Set up a CloudWatch Event Rule to trigger the EC2 instance launch event.
+- Attach the Lambda function as the target.
+
+#### **5. Testing**
+- Launch a new EC2 instance.
+- After a short delay, confirm that the instance is automatically tagged as specified.
+
+
 
 ----------------------------------------------
 
