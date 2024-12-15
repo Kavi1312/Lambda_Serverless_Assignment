@@ -1,3 +1,265 @@
+# Assignment 1: Automated Instance Management Using AWS Lambda and Boto3
+
+## Objective
+The objective of this assignment is to:
+
+- Gain hands-on experience with AWS Lambda and Boto3 for cloud automation.
+- Automatically manage EC2 instances by starting or stopping them based on their tags.
+## Task
+You are asked with automating the management of EC2 instances using AWS Lambda and Python's Boto3 library:
+- Stop instances tagged as `Auto-Stop`.
+- Start instances tagged as `Auto-Start`.
+## Specific Requirements
+1. **Setup**
+   - Launch two EC2 instances in AWS.
+   - Assign the following tags:
+
+     **Instance 1:**
+     - **Key:** Action
+     - **Value:** Auto-Stop
+
+     **Instance 2:**
+     - **Key:** Action
+     - **Value:** Auto-Start
+
+2. **Lambda Function**
+   - Create a Lambda function that:
+     - Describes EC2 instances using Boto3.
+     - Identifies instances tagged as `Auto-Stop` and stops them.
+     - Identifies instances tagged as `Auto-Start` and starts them.
+
+3. **Testing**
+   - Manually invoke the Lambda function and verify:
+     - Instances tagged as `Auto-Stop` are stopped.
+     - Instances tagged as `Auto-Start` are started.
+
+
+## Documentation :- Automated Instance Management Using AWS Lambda and Boto3
+
+
+## Step-by-Step Implementation
+
+### Step 1: Create EC2 Instances
+
+1. **Navigate to the EC2 Dashboard:**
+   - Open the AWS Console and search for `EC2`.
+
+2. **Launch Instances:**
+   - Click **Launch Instance**.
+   - Select a free-tier eligible instance type (e.g., `t2.micro`).
+
+3. **Assign Tags:**
+   - While configuring the instance, add the following tags:
+
+     **Instance 1:**
+     - **Key:** Action
+     - **Value:** Auto-Stop
+
+     **Instance 2:**
+     - **Key:** Action
+     - **Value:** Auto-Start
+ -  ![image](https://github.com/user-attachments/assets/816ae231-577a-4e7a-84c9-f6768158f47e)
+ -  ![image](https://github.com/user-attachments/assets/22bac472-d88a-412f-b068-4c59f53a526e)
+
+
+4. **Verify Tags:**
+   - Go to the **Tags** tab of each instance in the EC2 Dashboard to confirm the correct key-value pairs.
+
+---
+
+### Step 2: Configure an IAM Role for Lambda
+
+1. **Go to the IAM Console:**
+   - Navigate to **Roles** → **Create Role**.
+
+2. **Choose Trusted Entity:**
+   - Select **AWS Service** and choose **Lambda**.
+
+3. **Attach Policy:**
+   - For simplicity during testing, attach the `AmazonEC2FullAccess` policy.
+   - For better security, use the following custom policy:
+
+   ```json
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Effect": "Allow",
+               "Action": [
+                   "ec2:DescribeInstances",
+                   "ec2:StartInstances",
+                   "ec2:StopInstances"
+               ],
+               "Resource": "*"
+           }
+       ]
+   }
+   ```
+   - ![image](https://github.com/user-attachments/assets/68cdf254-b43e-4f44-8786-9d3a056975bd)
+
+
+4. **Name the Role:**
+   - Name it `Ec2tagLambda` and save it.
+
+5. **Attach the Role to Lambda:**
+   - This role will allow the Lambda function to manage EC2 instances.
+
+---
+
+### Step 3: Create the Lambda Function
+
+1. **Navigate to the AWS Lambda Console:**
+   - Select **Create Function**.
+
+2. **Set Configuration:**
+   - **Name:** EC2InstanceManager
+   - **Runtime:** Python 3.x
+   - **Execution Role:** Attach the `Lambda_EC2_Manager_Role`.
+
+3. **Paste the Code:**
+   - Use the following Python script in the function editor.
+   - ![image](https://github.com/user-attachments/assets/e41e1768-0605-4164-a9fe-1493c8726c96)
+
+
+#### Lambda Function Code
+
+```python
+import boto3
+import logging
+
+# Set up logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+def lambda_handler(event, context):
+    ec2 = boto3.client('ec2')
+    
+    # Describe instances with Action tags
+    response = ec2.describe_instances(Filters=[
+        {'Name': 'tag:Action', 'Values': ['Auto-Stop', 'Auto-Start']}
+    ])
+    
+    auto_stop_instances = []
+    auto_start_instances = []
+
+    # Process the response
+    for reservation in response['Reservations']:
+        for instance in reservation['Instances']:
+            instance_id = instance['InstanceId']
+            state = instance['State']['Name']
+            for tag in instance.get('Tags', []):
+                if tag['Key'] == 'Action':
+                    if tag['Value'] == 'Auto-Stop' and state == 'running':
+                        auto_stop_instances.append(instance_id)
+                    elif tag['Value'] == 'Auto-Start' and state == 'stopped':
+                        auto_start_instances.append(instance_id)
+    
+    # Stop instances
+    if auto_stop_instances:
+        logger.info(f"Stopping instances: {auto_stop_instances}")
+        ec2.stop_instances(InstanceIds=auto_stop_instances)
+    else:
+        logger.info("No 'Auto-Stop' instances found.")
+    
+    # Start instances
+    if auto_start_instances:
+        logger.info(f"Starting instances: {auto_start_instances}")
+        ec2.start_instances(InstanceIds=auto_start_instances)
+    else:
+        logger.info("No 'Auto-Start' instances found.")
+    
+    return {
+        "statusCode": 200,
+        "body": "Instance management completed successfully!"
+    }
+```
+
+---
+
+### Step 4: Test the Lambda Function
+
+1. **Create a Test Event:**
+   - Use a simple JSON payload like this:
+
+     ```json
+     {}
+     ```
+
+2. **Run the Function:**
+   - Click **Test** in the Lambda Console.
+
+3. **Verify Logs:**
+   - Go to the **Monitor** tab → **CloudWatch Logs**.
+   - Confirm that instances with `Auto-Stop` tags were stopped and `Auto-Start` tags were started.
+
+---
+- ![image](https://github.com/user-attachments/assets/aecbb0ff-0748-4420-8171-4213ab579da1)
+
+
+
+### Step 5: Verify in EC2
+
+1. **Go to EC2 Dashboard:**
+   - Check the **Instance State**.
+
+2. **Expected Outcome:**
+   - Instances with `Auto-Stop` → Stopped.
+   - Instances with `Auto-Start` → Running.
+
+- ![image](https://github.com/user-attachments/assets/5559d030-47ea-42a9-b193-993a1084d6e8)
+
+
+## Troubleshooting
+
+### 1. IAM Permissions Issue
+
+- **Error:** Access Denied.
+- **Solution:** Ensure the IAM role attached to the Lambda function has permissions for:
+  - `ec2:DescribeInstances`
+  - `ec2:StartInstances`
+  - `ec2:StopInstances`.
+
+### 2. Tag Mismatch
+
+- **Issue:** Lambda function does not detect instances.
+- **Solution:**
+  - Ensure tags are:
+    - **Key:** Action
+    - **Value:** Auto-Stop or Auto-Start.
+  - Tags are case-sensitive.
+
+### 3. Logs Show No Action
+
+- **Cause:** Instances are already in the desired state.
+- **Solution:** Confirm:
+  - `Auto-Stop` instances are running.
+  - `Auto-Start` instances are stopped.
+
+---
+
+## Deliverables
+
+1. **Screenshots:**
+   - Before and after Lambda execution, showing instance states.
+
+2. **Lambda Code:**
+   - Include the Python script.
+
+3. **Summary Report:**
+   - Document the steps, challenges, and solutions.
+
+---
+## Conclusion
+
+By completing this assignment, you learned:
+
+- How to automate EC2 management using AWS Lambda and Boto3.
+- How to configure IAM roles and manage permissions effectively.
+- How to debug and troubleshoot Lambda functions.
+
+
+===================================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================================
 
 # **ASSIGNMENT 18: AUTOSAVE EC2 INSTANCE STATE BEFORE SHUTDOWN**
 
@@ -73,10 +335,9 @@ The goal of this assignment is to create a process where, before an EC2 instance
            }
        ]
    }
--------------------------------------------   ```
-4. Assign the role to your Lambda function.
-- 
 
+   
+4. Assign the role to your Lambda function.
 
 ### Step 3: Create a CloudWatch Rule
 1. Navigate to the **CloudWatch Console**.
@@ -87,7 +348,7 @@ The goal of this assignment is to create a process where, before an EC2 instance
    - **Specific State**: `shutting-down`
 4. Add the Lambda function as the target.
 5. Name the rule `ec2-shutdown-trigger` and enable it.
-6. - ![image](https://github.com/user-attachments/assets/2ab9b12c-ac57-4cc4-84ba-667ee608ab77)
+ - ![image](https://github.com/user-attachments/assets/2ab9b12c-ac57-4cc4-84ba-667ee608ab77)
 
 -
 
@@ -205,11 +466,11 @@ def lambda_handler(event, context):
 ## Conclusion
 This solution ensures that EC2 instance details are automatically saved to an S3 bucket before termination or shutdown, providing a reliable backup mechanism. By leveraging AWS services such as CloudWatch, Lambda, and S3, the process is fully automated and scalable.
 ====================================================================================================================================================================================================================================================================
+====================================================================================================================================================================================================================================================================
 
 
 
-
-# **Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3**
+### **Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3**
 
 ### **Objective**
 Learn to automate the tagging of EC2 instances as soon as they are launched, ensuring better resource tracking and management.
@@ -475,7 +736,6 @@ aws ec2 create-tags --resources i-0bcf4a6cdc4d9fe57 --tags Key=LaunchDate,Value=
 
 
 
-
 ## **Assignment 14: Monitor EC2 Instance State Changes Using AWS Lambda, Boto3, and SNS**
 
 ### **Objective**
@@ -692,5 +952,9 @@ def lambda_handler(event, context):
 
 1. Delete the Lambda function, EventBridge rule, and SNS topic if you no longer need them.
 2. Remove the IAM role if it's no longer required.
+
+====================================================================================================================================================================================================================================================================
+
+
 
 
