@@ -805,7 +805,8 @@ def lambda_handler(event, context):
    - Add a filter for `state` → `running` in the **Event Pattern** section.
 
    Final Event Pattern JSON:
-   ```json
+
+   json
    {
        "source": ["aws.ec2"],
        "detail-type": ["EC2 Instance State-change Notification"],
@@ -813,11 +814,13 @@ def lambda_handler(event, context):
            "state": ["running"]
        }
    }
-   `` ![image](https://github.com/user-attachments/assets/12853eb6-f374-4131-ade9-02a41d36afa8)`
+
+
+   ![image](https://github.com/user-attachments/assets/12853eb6-f374-4131-ade9-02a41d36afa8)`
 
    
-4. **Set the Target:** Attach the Lambda function created earlier (`AutoTagEC2Instance`).
-5. Save and enable the rule.
+5. **Set the Target:** Attach the Lambda function created earlier (`AutoTagEC2Instance`).
+6. Save and enable the rule.
 
 ---
 
