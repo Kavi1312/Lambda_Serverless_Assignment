@@ -335,7 +335,7 @@ The goal of this assignment is to create a process where, before an EC2 instance
            }
        ]
    }
-
+   ```
    
 4. Assign the role to your Lambda function.
 
@@ -424,7 +424,7 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps(f"Error: {str(e)}")
         }
-'''
+```
 
 ------------
 ### Step 5: Testing
@@ -468,7 +468,6 @@ def lambda_handler(event, context):
 ## Conclusion
 This solution ensures that EC2 instance details are automatically saved to an S3 bucket before termination or shutdown, providing a reliable backup mechanism. By leveraging AWS services such as CloudWatch, Lambda, and S3, the process is fully automated and scalable.
 ====================================================================================================================================================================================================================================================================
-===================================================================================================================================================================================================================================================================
 
 ## **Assignment 14: Monitor EC2 Instance State Changes Using AWS Lambda, Boto3, and SNS**
 
@@ -518,7 +517,6 @@ Set up a Lambda function that listens to EC2 state change events and sends SNS n
 4. Enter your email address in the **Endpoint** field.
 5. Click **Create subscription**.
 6. Check your email inbox for a confirmation email from AWS and confirm your subscription.
-
 
 ---
 
@@ -700,7 +698,7 @@ Automatically tag any newly launched EC2 instance with the current date and a cu
 3. Assign the IAM role created in the previous step.
 4. Replace the default code with the following:
 
-python
+```python
 import json
 import boto3
 import datetime
@@ -754,7 +752,7 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': f"Failed to apply tags: {str(e)}"
         }
-
+```
 
 5. **Deploy** the code to save the function.
 ---
@@ -944,10 +942,9 @@ Automatically monitor changes in EC2 instance states and send notifications via 
 
 python
 
-import json
+```import json
 import boto3
 def lambda_handler(event, context):
-
     try:
         # Log the received event
         print("Received event:", json.dumps(event, indent=2))
@@ -978,7 +975,7 @@ def lambda_handler(event, context):
     except Exception as e:
         print("Error:", str(e))
         raise
-
+```
 
 2. Replace `<YOUR_SNS_TOPIC_ARN>` with the ARN of your SNS topic (found in the SNS dashboard).
 3. Click **Deploy** to save your changes.
