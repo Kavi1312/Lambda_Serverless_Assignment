@@ -870,20 +870,6 @@ def lambda_handler(event, context):
 
 ---
 
-## **Step 7: Cleanup (Optional)**
-
-1. Delete the Lambda function, EventBridge rule, and SNS topic if you no longer need them.
-2. Remove the IAM role if it's no longer required.
-
-### 6. Cleanup (Optional)
-1. Delete the Lambda function, EventBridge rule, and SNS topic if you no longer need them.
-2. Remove the IAM role if it is no longer required.
-
----
-
-This document provides step-by-step instructions to set up and test a Lambda function for monitoring EC2 instance state changes and sending notifications using SNS. Follow each step carefully to complete your assignment successfully.
-
-
 
 
 
