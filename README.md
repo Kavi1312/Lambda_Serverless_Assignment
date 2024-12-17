@@ -467,6 +467,9 @@ def lambda_handler(event, context):
      
 ## Conclusion
 This solution ensures that EC2 instance details are automatically saved to an S3 bucket before termination or shutdown, providing a reliable backup mechanism. By leveraging AWS services such as CloudWatch, Lambda, and S3, the process is fully automated and scalable.
+
+
+===========================================================================================================
 ======================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 # Assignment 5: Auto-Tagging EC2 Instances on Launch Using AWS Lambda and Boto3
